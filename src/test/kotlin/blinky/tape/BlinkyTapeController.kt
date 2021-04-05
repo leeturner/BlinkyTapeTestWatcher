@@ -3,6 +3,7 @@ package blinky.tape
 import jssc.SerialPort
 import jssc.SerialPortException
 
+// you may need to change the port name on your machine
 class BlinkyTapeController(portName: String = "/dev/tty.usbmodem1412201"): AutoCloseable {
 
     private val serialPort: SerialPort = SerialPort(portName)
