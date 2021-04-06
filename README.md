@@ -13,4 +13,4 @@ The `afterAll` method performs 3 checks:
 1) If non of the tests have failed but there were disabled tests it renders the BlinkyTape as all orange
 1) If all of the tests pass then it renders the BlinkyTape as all green
 
-Most of the code for the actual BlinkyTape integration was taken [night-fever](https://github.com/leeturner/night-fever).
+Most of the code for the actual BlinkyTape integration was taken from [night-fever](https://github.com/leeturner/night-fever).
