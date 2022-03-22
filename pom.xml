@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>16</java.version>
         <kotlin.version>1.6.10</kotlin.version>
-        <strikt-core.version>0.34.0</strikt-core.version>
+        <strikt-core.version>0.34.1</strikt-core.version>
         <jssc.version>2.8.0</jssc.version>
         <junit-jupiter-engine.version>5.8.2</junit-jupiter-engine.version>
     </properties>
