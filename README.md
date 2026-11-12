@@ -1,11 +1,21 @@
-# Junit Test Watcher API Powered Blinky Tape
-This repo demonstrates a [Junit 5](https://junit.org/junit5/) [TestWatcher API](https://junit.org/junit5/docs/5.5.1/api/org/junit/jupiter/api/extension/TestWatcher.html) implementation that hooks up your tests to a BlinkyTape LED strip.
+# BlinkyTapeTestWatcher
 
-![Junit TestWatcher API BlinkyTape](https://github.com/leeturner/BlinkyTapeTestWatcher/blob/main/images/junit-blinkytape.gif)
+A Kotlin implementation of the [JUnit 5](https://junit.org/junit5/)
+[TestWatcher API](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/TestWatcher.html)
+that shows the result of your tests on a [BlinkyTape](https://blinkinlabs.com/products/blinkytape) LED strip: green
+when everything passes, orange when tests were skipped and red when anything fails. I wrote about it in
+[BlinkyTape JUnit TestWatcher API Implementation](https://leeturner.me/posts/blinkytape-junit-testwatcher/).
+
+![The BlinkyTape changing colour as the tests run](images/junit-blinkytape.gif)
 
 ## How it works
 
-The `BlinkyTapeTestWatcher` class implements the TestWatcher API and simply tracks the success, failure or whether a test is disabled or not.  It also implements the `AfterAllCallback` interface allows us to override a method called `afterAll` that is executed when all the tests have finished.
+`BlinkyTapeTestWatcher` implements the TestWatcher API to track whether each test passed, failed or was disabled. It
+also implements `AfterAllCallback`, so its `afterAll` method runs once every test has finished and lights the strip:
+
+1. If any test failed, the whole strip turns red.
+2. If none failed but some were disabled, it turns orange.
+3. If every test passed, it turns green.
 
 <details>
   <summary>Click to see the BlinkyTapeTestWatcher implementation!</summary>
@@ -71,16 +81,35 @@ class BlinkyTapeTestWatcher : TestWatcher, AfterAllCallback {
 ```
 </details>
 
-The `afterAll` method performs 3 checks:
+The code that talks to the BlinkyTape over its serial port comes from
+[night-fever](https://github.com/leeturner/night-fever).
 
-1) If any of the tests have failed it renders the BlinkyTape as all red
-1) If non of the tests have failed but there were disabled tests it renders the BlinkyTape as all orange
-1) If all of the tests pass then it renders the BlinkyTape as all green
+## Requirements
 
-Most of the code for the actual BlinkyTape integration was taken from [night-fever](https://github.com/leeturner/night-fever).
+- A BlinkyTape LED strip (60 LEDs) plugged in over USB
+- Java 16 or later and Maven
 
-I am pretty sure that the use case for this is pretty limited :grinning: but if you wanted to give this a go, the repo has a few tests that you can play with:
+## Usage
 
-* [AllSuccessButOneDisabledUnitTest.kt](https://github.com/leeturner/BlinkyTapeTestWatcher/blob/main/src/test/kotlin/AllSuccessButOneDisabledUnitTest.kt)
-* [AllSuccessUnitTest.kt](https://github.com/leeturner/BlinkyTapeTestWatcher/blob/main/src/test/kotlin/AllSuccessUnitTest.kt)
-* [OneFailedUnitTest.kt](https://github.com/leeturner/BlinkyTapeTestWatcher/blob/main/src/test/kotlin/OneFailedUnitTest.kt)
+The serial port is set in `BlinkyTapeController`. It defaults to `/dev/tty.usbmodem1412201`, which is where the strip
+appeared on my Mac, so change it to match your machine. On macOS, `ls /dev/tty.usbmodem*` shows the port once the
+strip is plugged in.
+
+Then run the tests:
+
+```shell
+mvn test
+```
+
+Each test class uses `@ExtendWith(BlinkyTapeTestWatcher::class)`, so you can try all three colours:
+
+* [AllSuccessUnitTest.kt](src/test/kotlin/AllSuccessUnitTest.kt) turns the strip green
+* [AllSuccessButOneDisabledUnitTest.kt](src/test/kotlin/AllSuccessButOneDisabledUnitTest.kt) turns it orange
+* [OneFailedUnitTest.kt](src/test/kotlin/OneFailedUnitTest.kt) turns it red
+
+To use it in your own project, copy the `blinky` package into your tests, add the
+[jSSC](https://github.com/java-native/jssc) dependency and annotate your test classes the same way.
+
+## Licence
+
+Apache 2.0. See [LICENSE](LICENSE).
